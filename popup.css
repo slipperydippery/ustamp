@@ -43,29 +43,58 @@ button {
   right: 0;
   width: 45px;
   height: 100%;
-  padding: 0;
+  padding: 10px;
   margin: 0;
   border-top-left-radius: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 0px;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: transparent;
 }
 
 #startstop:hover {
-  background-color: rgba(0, 0, 0,1);
+  background-color:  var(--lipstick-red);
 }
-.dot {
+
+#startstop:hover .dot,
+.dot-container:hover .dot,
+.dot:hover {
+  animation-play-state: paused;
+  background-color: var(--background);
+}
+
+.dot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
+}
+
+.dot {
   background-color: var(--button-grey-very-light);
   border-radius: 50%;
   opacity: 0;
+  width: 5px;
+  height: 5px;
 }
 
 .dot.active {
     opacity: 1;
+}
+
+@keyframes pulse {
+  0%, 20%, 55%{
+    background-color: var(--button-grey-very-light);
+  }
+  10%, 35% {
+    background-color: var(--lipstick-red);
+  }
+}
+
+.dot.holding-animation {
+  animation: pulse 1.8s infinite;
 }
 
 .timebox {

@@ -1,8 +1,5 @@
 document.getElementById('copy-timestamp').addEventListener('click', copyCurrentTimestamp);
 
-// Get the current date and time
-const now = new Date();
-
 // Get the input fields
 const yearField = document.getElementById('year');
 const monthField = document.getElementById('month');
@@ -14,16 +11,10 @@ const secondField = document.getElementById('second');
 // Array of month names
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Set the value of each input field based on the current date and time
-yearField.value = now.getFullYear();
-monthField.value = monthNames[now.getMonth()]; // Use the current month number as an index to get the month name
-dayField.value = now.getDate();
-hourField.value = now.getHours();
-minuteField.value = now.getMinutes();
-secondField.value = now.getSeconds();
-
 // Create a Date object
 let date = new Date();
+
+updateFields();
 
 // Function to update the input fields based on the date
 function updateFields() {
@@ -66,6 +57,12 @@ function updateDots(sequenceStep) {
   }
 }
 
+function dotHoldingPattern() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach(dot => dot.classList.add('active'));
+  dots.forEach(dot => dot.classList.add('holding-animation'));
+}
+
 // Update the input fields initially
 let isUpdating = true;
 updateFields();
@@ -76,16 +73,19 @@ function startUpdating() {
   // Calculate the time remaining until the next full second
   let now = new Date();
   let delay = 1000 - (now.getMilliseconds());
+  let sequenceStep = 0;
 
   // Update the fields after the remaining time, then every full second
   setTimeout(() => {
-    date = new Date(Math.floor(Date.now() / 1000));
+    date = new Date();
     updateFields();
-    updateDots((Math.floor(date.getTime() / 1000)) % 8);
+    updateDots(sequenceStep % 8);
+    sequenceStep++;
     intervalId = setInterval(() => {
       date = new Date();
       updateFields();
-      updateDots((Math.floor(date.getTime() / 1000)) % 8);
+      updateDots(sequenceStep % 8);
+      sequenceStep++;
     }, 1000);
   }, delay);
 
@@ -96,6 +96,7 @@ function startUpdating() {
 function stopUpdating() {
   isUpdating = false;
   clearInterval(intervalId);
+  dotHoldingPattern();
 }
 
 // Get the start/stop button
@@ -104,7 +105,7 @@ const startStopButton = document.getElementById('startstop');
 // Function to start or stop updating the fields
 function toggleUpdating() {
   if (isUpdating) {
-    clearInterval(intervalId);
+    stopUpdating();
   } else {
     startUpdating();
   }
@@ -207,12 +208,12 @@ function copyCurrentTimestamp() {
     yearField.value,
     monthNames.indexOf(monthField.value),
     dayField.value,
-    hourField.value,
-    minuteField.value,
-    secondField.value
+    +hourField.value,
+    +minuteField.value,
+    +secondField.value
   );
 
-  let timestamp = timestampDate.getTime();
+  let timestamp = Math.floor(timestampDate.getTime() / 1000);
 
   navigator.clipboard.writeText(String(timestamp))
     .then(() => {
@@ -223,18 +224,13 @@ function copyCurrentTimestamp() {
     });
 }
 
-// Select all buttons with the class "should-close"
 const closeButtons = document.querySelectorAll('.should-close');
 
-// Add the event listener to each button
 closeButtons.forEach(button => {
   button.addEventListener('click', function() {
-    // Your existing code...
-
-    // Close the popup after a delay
     setTimeout(() => {
       window.close();
-    }, 1000);  // Change this value to the number of milliseconds you want to delay
+    }, 1000);
   });
 });
 
