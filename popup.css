@@ -54,7 +54,7 @@ button {
 }
 
 #startstop:hover {
-  background-color:  var(--lipstick-red);
+  background-color: var(--lipstick-red);
 }
 
 #startstop:hover .dot,
@@ -81,14 +81,19 @@ button {
 }
 
 .dot.active {
-    opacity: 1;
+  opacity: 1;
 }
 
 @keyframes pulse {
-  0%, 20%, 55%{
+
+  0%,
+  20%,
+  55% {
     background-color: var(--button-grey-very-light);
   }
-  10%, 35% {
+
+  10%,
+  35% {
     background-color: var(--lipstick-red);
   }
 }
@@ -114,29 +119,23 @@ input[type="text"] {
   cursor: pointer;
   user-select: none;
 
-  background: linear-gradient(
-    to bottom,
-    var(--button-grey),
-    var(--button-grey-light),
-    var(--button-grey)
-  );
+  background: linear-gradient(to bottom,
+      var(--button-grey),
+      var(--button-grey-light),
+      var(--button-grey));
   color: var(--background);
   font-size: 20px;
 }
 
 input[type="text"]:hover {
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       rgba(0, 0, 0, 0.4),
       rgba(0, 0, 0, 0.2),
-      rgba(0, 0, 0, 0.4)
-    ),
-    linear-gradient(
-      to bottom,
+      rgba(0, 0, 0, 0.4)),
+    linear-gradient(to bottom,
       var(--elephant),
       var(--elephant),
-      var(--elephant)
-    );
+      var(--elephant));
   color: var(--background);
 }
 
@@ -200,11 +199,9 @@ button {
 }
 
 #time_dots:hover {
-  background: linear-gradient(
-    to bottom,
-    var(--button-grey),
-    var(--button-grey-light),
-    var(--button-grey)
-  );
+  background: linear-gradient(to bottom,
+      var(--button-grey),
+      var(--button-grey-light),
+      var(--button-grey));
   color: var(--background);
 }

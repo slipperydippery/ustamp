@@ -26,7 +26,4 @@ document.body.addEventListener('mouseover', (event) => {
   function zpad(v) {
     return (`0${v}`).slice(-2);
   }
-
 });
-
-

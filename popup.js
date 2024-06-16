@@ -1,6 +1,9 @@
-document.getElementById('copy-timestamp').addEventListener('click', copyCurrentTimestamp);
+// Get fields
+const closeButtons = document.querySelectorAll('.should-close');
+const copyTimestampButton = document.getElementById('copy-timestamp');
+const startStopButton = document.getElementById('startstop');
+const highlightTimestampsButton = document.getElementById('highlightTimestamps');
 
-// Get the input fields
 const yearField = document.getElementById('year');
 const monthField = document.getElementById('month');
 const dayField = document.getElementById('day');
@@ -8,29 +11,63 @@ const hourField = document.getElementById('hour');
 const minuteField = document.getElementById('minute');
 const secondField = document.getElementById('second');
 
-// Array of month names
+const dots = document.querySelectorAll('.dot');
+const dot1 = document.getElementById('dot1');
+const dot2 = document.getElementById('dot2');
+const dot3 = document.getElementById('dot3');
+const dot4 = document.getElementById('dot4');
+
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Create a Date object
 let date = new Date();
+let isUpdating = true;
 
-updateFields();
+// Main Process
+startUpdating();
 
-// Function to update the input fields based on the date
+// Functions
+function startUpdating() {
+  let sequenceStep = 0;
+
+  date = new Date();
+  updateFields();
+
+  let now = new Date();
+  let delay = 1000 - (now.getMilliseconds());
+
+  setTimeout(() => {
+    date = new Date();
+    updateFields();
+    updateDots(sequenceStep % 8);
+    sequenceStep++;
+
+    intervalId = setInterval(() => {
+      date = new Date();
+      updateFields();
+      updateDots(sequenceStep % 8);
+      sequenceStep++;
+    }, 1000);
+  }, delay);
+
+  isUpdating = true;
+}
+
+function stopUpdating() {
+  isUpdating = false;
+  clearInterval(intervalId);
+  activateDotHoldingPattern();
+}
+
 function updateFields() {
   yearField.value = date.getFullYear();
   monthField.value = monthNames[date.getMonth()];
   dayField.value = date.getDate();
-  hourField.value = String(date.getHours()).padStart(2, '0'); // Pad the start of the string with '0' until it is 2 characters long
-  minuteField.value = String(date.getMinutes()).padStart(2, '0'); // Pad the start of the string with '0' until it is 2 characters long
-  secondField.value = String(date.getSeconds()).padStart(2, '0'); // Pad the start of the string with '0' until it is 2 characters long
+  hourField.value = String(date.getHours()).padStart(2, '0');
+  minuteField.value = String(date.getMinutes()).padStart(2, '0');
+  secondField.value = String(date.getSeconds()).padStart(2, '0');
 }
 
 function updateDots(sequenceStep) {
-  const dot1 = document.getElementById('dot1');
-  const dot2 = document.getElementById('dot2');
-  const dot3 = document.getElementById('dot3');
-  const dot4 = document.getElementById('dot4');
 
   if ([0, 1, 2, 3].includes(sequenceStep)) {
     dot1.classList.add('active');
@@ -57,88 +94,29 @@ function updateDots(sequenceStep) {
   }
 }
 
-function dotHoldingPattern() {
-  const dots = document.querySelectorAll('.dot');
+function activateDotHoldingPattern() {
   dots.forEach(dot => dot.classList.add('active'));
   dots.forEach(dot => dot.classList.add('holding-animation'));
 }
 
-// Update the input fields initially
-let isUpdating = true;
-updateFields();
-startUpdating();
-
-// Function to start updating the fields
-function startUpdating() {
-  // Calculate the time remaining until the next full second
-  let now = new Date();
-  let delay = 1000 - (now.getMilliseconds());
-  let sequenceStep = 0;
-
-  // Update the fields after the remaining time, then every full second
-  setTimeout(() => {
-    date = new Date();
-    updateFields();
-    updateDots(sequenceStep % 8);
-    sequenceStep++;
-    intervalId = setInterval(() => {
-      date = new Date();
-      updateFields();
-      updateDots(sequenceStep % 8);
-      sequenceStep++;
-    }, 1000);
-  }, delay);
-
-  isUpdating = true;
+function deactivateDotHoldingPattern() {
+  dots.forEach(dot => dot.classList.remove('active'));
+  dots.forEach(dot => dot.classList.remove('holding-animation'));
 }
 
-// Function to stop updating the date fields
-function stopUpdating() {
-  isUpdating = false;
-  clearInterval(intervalId);
-  dotHoldingPattern();
-}
-
-// Get the start/stop button
-const startStopButton = document.getElementById('startstop');
-
-// Function to start or stop updating the fields
 function toggleUpdating() {
   if (isUpdating) {
     stopUpdating();
+    activateDotHoldingPattern();
   } else {
     startUpdating();
+    deactivateDotHoldingPattern();
   }
-  // Toggle the isUpdating flag
-  isUpdating = !isUpdating;
 }
 
-// Add an event listener to the start/stop button
-startStopButton.addEventListener('click', () => {
-  date = new Date();
-  updateFields();
-  toggleUpdating();
-});
-
-// Add event listeners to stop updating the date fields when the user interacts with them
-yearField.addEventListener('wheel', stopUpdating);
-yearField.addEventListener('click', stopUpdating);
-monthField.addEventListener('wheel', stopUpdating);
-monthField.addEventListener('click', stopUpdating);
-dayField.addEventListener('wheel', stopUpdating);
-dayField.addEventListener('click', stopUpdating);
-hourField.addEventListener('wheel', stopUpdating);
-hourField.addEventListener('click', stopUpdating);
-minuteField.addEventListener('wheel', stopUpdating);
-minuteField.addEventListener('click', stopUpdating);
-secondField.addEventListener('wheel', stopUpdating);
-secondField.addEventListener('click', stopUpdating);
-
-// Function to update the date and the fields
-function updateDateAndFields(event) {
+function scrollDateEvent(event) {
   event.preventDefault();
 
-  // Update the date
   if (event.target === yearField) {
     date.setFullYear(date.getFullYear() + (event.deltaY > 0 ? -1 : 1));
   } else if (event.target === monthField) {
@@ -155,54 +133,34 @@ function updateDateAndFields(event) {
 
   // Check if the date is before the Unix Epoch
   if (date < new Date(1970, 0, 1, 0, 0, 0)) {
-    // Reset the date to the Unix Epoch
     date = new Date(1970, 0, 1, 0, 0, 0);
   }
 
-  // Update the fields
   updateFields();
 }
 
-// Add wheel event listeners to the fields
-yearField.addEventListener('wheel', updateDateAndFields);
-monthField.addEventListener('wheel', updateDateAndFields);
-dayField.addEventListener('wheel', updateDateAndFields);
-hourField.addEventListener('wheel', updateDateAndFields);
-minuteField.addEventListener('wheel', updateDateAndFields);
-secondField.addEventListener('wheel', updateDateAndFields);
-
-// Add a click event listener to the year field
-yearField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), 0);
+function truncateDateTo(field) {
+  switch(field) {
+    case 'year':
+      date = new Date(date.getFullYear(), 0);
+      break;
+    case 'month':
+      date = new Date(date.getFullYear(), date.getMonth(), 1);
+      break;
+    case 'day':
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      break;
+    case 'hour':
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours());
+      break;
+    case 'minute':
+    case 'second':
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+      break;
+  }
   updateFields();
-});
+}
 
-monthField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), date.getMonth(), 1);
-  updateFields();
-});
-
-dayField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  updateFields();
-});
-
-hourField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours());
-  updateFields();
-});
-
-minuteField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
-  updateFields();
-});
-
-secondField.addEventListener('click', () => {
-  date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
-  updateFields();
-});
-
-// Function to handle the "copy current timestamp" functionality
 function copyCurrentTimestamp() {
   let timestampDate = new Date(
     yearField.value,
@@ -224,29 +182,7 @@ function copyCurrentTimestamp() {
     });
 }
 
-const closeButtons = document.querySelectorAll('.should-close');
-
-closeButtons.forEach(button => {
-  button.addEventListener('click', function() {
-    setTimeout(() => {
-      window.close();
-    }, 1000);
-  });
-});
-
-
-document.getElementById('highlightTimestamps').addEventListener('click', () => {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id},
-            function: highlightTimestamps
-        });
-    });
-});
-
 function showNotification(message) {
-  const copyTimestampButton = document.getElementById('copy-timestamp');
-
   const originalText = copyTimestampButton.textContent;
 
   copyTimestampButton.innerHTML = `Copied ${message} 
@@ -256,7 +192,6 @@ function showNotification(message) {
   copyTimestampButton.style.backgroundColor = 'var(--lipstick-red)';
   copyTimestampButton.style.color = 'var(--background)';
 
-  // Reset the button's text after 3 seconds
   setTimeout(() => {
     copyTimestampButton.textContent = originalText;
     copyTimestampButton.style.backgroundColor = '';
@@ -264,54 +199,104 @@ function showNotification(message) {
   }, 1000);
 }
 
+function closeWindowOnClickedButton(button) {
+  button.addEventListener('click', function () {
+    setTimeout(() => {
+      window.close();
+    }, 1000);
+  });
+}
+
+// Event listeners
+copyTimestampButton.addEventListener('click', copyCurrentTimestamp);
+
+startStopButton.addEventListener('click', () => {
+  date = new Date();
+  updateFields();
+  toggleUpdating();
+});
+
+yearField.addEventListener('wheel', stopUpdating);
+yearField.addEventListener('click', stopUpdating);
+monthField.addEventListener('wheel', stopUpdating);
+monthField.addEventListener('click', stopUpdating);
+dayField.addEventListener('wheel', stopUpdating);
+dayField.addEventListener('click', stopUpdating);
+hourField.addEventListener('wheel', stopUpdating);
+hourField.addEventListener('click', stopUpdating);
+minuteField.addEventListener('wheel', stopUpdating);
+minuteField.addEventListener('click', stopUpdating);
+secondField.addEventListener('wheel', stopUpdating);
+secondField.addEventListener('click', stopUpdating);
+
+yearField.addEventListener('wheel', scrollDateEvent);
+monthField.addEventListener('wheel', scrollDateEvent);
+dayField.addEventListener('wheel', scrollDateEvent);
+hourField.addEventListener('wheel', scrollDateEvent);
+minuteField.addEventListener('wheel', scrollDateEvent);
+secondField.addEventListener('wheel', scrollDateEvent);
+
+yearField.addEventListener('click', () => truncateDateTo('year'));
+monthField.addEventListener('click', () => truncateDateTo('month'));
+dayField.addEventListener('click', () => truncateDateTo('day'));
+hourField.addEventListener('click', () => truncateDateTo('hour'));
+minuteField.addEventListener('click', () => truncateDateTo('minute'));
+secondField.addEventListener('click', () => truncateDateTo('second'));
+
+closeButtons.forEach(closeWindowOnClickedButton);
+
+highlightTimestampsButton.addEventListener('click', highlightActiveTabTimestamps);
+
+
+function highlightActiveTabTimestamps() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      function: highlightTimestamps
+    });
+  });
+}
 
 function highlightTimestamps() {
-    const regex = /\b\d{10}\b/g;  // Regex to find 10 digit numbers which could be Unix timestamps
+  const regex = /\b\d{10}\b/g;
 
-    function traverseNodes(node) {
-        if (node.nodeType === 3) { // Text node
-            const matches = [...node.textContent.matchAll(regex)];
-            if (matches.length > 0) {
-                const parent = node.parentNode;
-                const frag = document.createDocumentFragment();
-                let lastIndex = 0;
-                matches.forEach(match => {
-                  const timestamp = match[0];
-              
-                  // Add text before the match
-                  frag.appendChild(document.createTextNode(node.textContent.substring(lastIndex, match.index)));
-              
-                  let span;
-                  // Check if the parent node is a span
-                  if (node.parentNode.nodeName === 'SPAN') {
-                      span = node.parentNode;
-                      // Replace only the timestamp within the span
-                      span.innerHTML = span.innerHTML.replace(timestamp, '');
-                  } else {
-                      // Create the highlighted span
-                      span = document.createElement('span');
-                      frag.appendChild(span);
-                  }
-              
-                  span.style.backgroundColor = 'yellow';
-                  // Append the timestamp to the span
-                  span.textContent = timestamp;
-              
-                  lastIndex = match.index + timestamp.length;
-              });
-              
-// Add any remaining text after the last match
-frag.appendChild(document.createTextNode(node.textContent.substring(lastIndex)));
+  function traverseNodes(node) {
+    if (node.nodeType === 3) {
+      const matches = [...node.textContent.matchAll(regex)];
+      if (matches.length > 0) {
+        const parent = node.parentNode;
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        matches.forEach(match => {
+          const timestamp = match[0];
 
-// Replace the original text node with the new fragment
-if (node.parentNode) {
-    node.parentNode.replaceChild(frag, node);
-}
-            }
-        } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') { // Element node
-            node.childNodes.forEach(child => traverseNodes(child));
+          frag.appendChild(document.createTextNode(node.textContent.substring(lastIndex, match.index)));
+
+          let span;
+          if (node.parentNode.nodeName === 'SPAN') {
+            span = node.parentNode;
+            span.innerHTML = span.innerHTML.replace(timestamp, '');
+          } else {
+            span = document.createElement('span');
+            frag.appendChild(span);
+          }
+
+          span.style.backgroundColor = 'yellow';
+          span.textContent = timestamp;
+
+          lastIndex = match.index + timestamp.length;
+        });
+
+        frag.appendChild(document.createTextNode(node.textContent.substring(lastIndex)));
+
+        if (node.parentNode) {
+          node.parentNode.replaceChild(frag, node);
         }
+      }
+    } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+      node.childNodes.forEach(child => traverseNodes(child));
     }
+  }
 
-    traverseNodes(document.body);
+  traverseNodes(document.body);
 }
