@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unix Timestamp Helper</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+  <div class="extension-container">
+    <div class="button-container">
+      <button id="copy-timestamp" class="should-close">Copy Timestamp</button>
+      <button id="startstop">
+        <div class="dot" id="dot1"></div>
+        <div class="dot" id="dot2"></div>
+        <div class="dot" id="dot4"></div>
+        <div class="dot" id="dot3"></div>
+      </button>
+    </div>
+    <div class="timebox">
+      <input type="text" id="year" class="input-left" placeholder="Year" readonly>
+      <input type="text" id="month" placeholder="Month" readonly>
+      <input type="text" id="day" placeholder="Day" readonly>
+      <input type="text" id="hour" placeholder="Hour" readonly>
+      <input type="text" id="time_dots" placeholder=":" readonly>
+      <input type="text" id="minute" placeholder="Minute" readonly>
+      <input type="text" id="time_dots" placeholder=":" readonly>
+      <input type="text" id="second" class="input-right" placeholder="Second" readonly>
+    </div>
+    <div class="button-container">
+      <button id="highlightTimestamps" class="should-close">Highlight Unix Timestamps</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
