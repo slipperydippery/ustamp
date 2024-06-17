@@ -6,7 +6,7 @@ document.body.addEventListener('mouseover', (event) => {
       const date = new Date(timestamp * 1000);
       const localDate = fmt(date, '');
       const utcDate = fmt(date, 'UTC');
-      const tooltip = `Local: ${localDate} UTC: ${utcDate}`;
+      const tooltip = `${localDate} UTC: ${utcDate}`;
       target.title = tooltip;
     }
   }
