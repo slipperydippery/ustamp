@@ -109,8 +109,9 @@ button {
   margin: 25px 0;
 }
 
-input[type="text"] {
+.timebox > div {
   flex: none;
+  position: relative;
   margin: 0;
   padding: 15px 5px;
   border: none;
@@ -127,7 +128,30 @@ input[type="text"] {
   font-size: 20px;
 }
 
-input[type="text"]:hover {
+.timebox #day-of-week {
+  font-size: 9px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 0;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  background: transparent !important;
+}
+
+#day:hover #day-of-week {
+  opacity: 0.5;
+}
+
+#day-of-week:hover {
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
+.timebox div:hover {
   background: linear-gradient(to bottom,
       rgba(0, 0, 0, 0.4),
       rgba(0, 0, 0, 0.2),
@@ -139,13 +163,13 @@ input[type="text"]:hover {
   color: var(--background);
 }
 
-input[type="text"].input-left {
+.timebox .input-left {
   border-top-left-radius: 18px;
   border-bottom-left-radius: 18px;
   padding: 15px 5px 15px 10px;
 }
 
-input[type="text"].input-right {
+.timebox .input-right {
   border-top-right-radius: 18px;
   border-bottom-right-radius: 18px;
   padding: 15px 10px 15px 5px;
@@ -195,7 +219,6 @@ button {
 
 #time_dots {
   width: 5px;
-  padding: 0;
 }
 
 #time_dots:hover {

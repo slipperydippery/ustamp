@@ -7,9 +7,21 @@ const highlightTimestampsButton = document.getElementById('highlightTimestamps')
 const yearField = document.getElementById('year');
 const monthField = document.getElementById('month');
 const dayField = document.getElementById('day');
+const dayOfMonthField = document.getElementById('day-of-month');
+const dayOfWeekField = document.getElementById('day-of-week');
 const hourField = document.getElementById('hour');
 const minuteField = document.getElementById('minute');
 const secondField = document.getElementById('second');
+const timeBoxFields = [
+  yearField,
+  monthField,
+  dayField,
+  dayOfMonthField,
+  dayOfWeekField,
+  hourField,
+  minuteField,
+  secondField,
+]
 
 const dots = document.querySelectorAll('.dot');
 const dot1 = document.getElementById('dot1');
@@ -59,12 +71,13 @@ function stopUpdating() {
 }
 
 function updateFields() {
-  yearField.value = date.getFullYear();
-  monthField.value = monthNames[date.getMonth()];
-  dayField.value = date.getDate();
-  hourField.value = String(date.getHours()).padStart(2, '0');
-  minuteField.value = String(date.getMinutes()).padStart(2, '0');
-  secondField.value = String(date.getSeconds()).padStart(2, '0');
+  yearField.textContent = date.getFullYear();
+  monthField.textContent = monthNames[date.getMonth()];
+  dayOfMonthField.textContent = date.getDate();
+  dayOfWeekField.textContent = date.toLocaleString('default', { weekday: 'long' });
+  hourField.textContent = String(date.getHours()).padStart(2, '0');
+  minuteField.textContent = String(date.getMinutes()).padStart(2, '0');
+  secondField.textContent = String(date.getSeconds()).padStart(2, '0');
 }
 
 function updateDots(sequenceStep) {
@@ -117,45 +130,64 @@ function toggleUpdating() {
 function scrollDateEvent(event) {
   event.preventDefault();
 
-  if (event.target === yearField) {
-    date.setFullYear(date.getFullYear() + (event.deltaY > 0 ? -1 : 1));
-  } else if (event.target === monthField) {
-    date.setMonth(date.getMonth() + (event.deltaY > 0 ? -1 : 1));
-  } else if (event.target === dayField) {
-    date.setDate(date.getDate() + (event.deltaY > 0 ? -1 : 1));
-  } else if (event.target === hourField) {
-    date.setHours(date.getHours() + (event.deltaY > 0 ? -1 : 1));
-  } else if (event.target === minuteField) {
-    date.setMinutes(date.getMinutes() + (event.deltaY > 0 ? -1 : 1));
-  } else if (event.target === secondField) {
-    date.setSeconds(date.getSeconds() + (event.deltaY > 0 ? -1 : 1));
+  switch (event.target) {
+    case yearField:
+      date.setFullYear(date.getFullYear() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    case monthField:
+      date.setMonth(date.getMonth() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    case dayOfWeekField:
+      date.setDate(date.getDate() + Math.sign(event.deltaY) * 7);
+      break;
+    case dayField:
+    case dayOfMonthField:
+      date.setDate(date.getDate() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    case hourField:
+      date.setHours(date.getHours() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    case minuteField:
+      date.setMinutes(date.getMinutes() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    case secondField:
+      date.setSeconds(date.getSeconds() + (event.deltaY > 0 ? -1 : 1));
+      break;
+    default:
+      break;
   }
 
   // Check if the date is before the Unix Epoch
-  if (date < new Date(1970, 0, 1, 0, 0, 0)) {
-    date = new Date(1970, 0, 1, 0, 0, 0);
+  if (date.getTime() < Date.UTC(1970, 0, 1, 0, 0, 0)) {
+    date = new Date(Date.UTC(1970, 0, 1, 0, 0, 0));
   }
 
   updateFields();
 }
 
-function truncateDateTo(field) {
-  switch(field) {
-    case 'year':
+function truncateDateTo(event) {
+  switch (event.target) {
+    case yearField:
       date = new Date(date.getFullYear(), 0);
       break;
-    case 'month':
+    case monthField:
       date = new Date(date.getFullYear(), date.getMonth(), 1);
       break;
-    case 'day':
+    case dayField:
+    case dayOfMonthField:
       date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       break;
-    case 'hour':
+    case dayOfWeekField:
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1);
+      break;
+    case hourField:
       date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours());
       break;
-    case 'minute':
-    case 'second':
+    case minuteField:
+    case secondField:
       date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+      break;
+    default:
       break;
   }
   updateFields();
@@ -163,12 +195,12 @@ function truncateDateTo(field) {
 
 function copyCurrentTimestamp() {
   let timestampDate = new Date(
-    yearField.value,
-    monthNames.indexOf(monthField.value),
-    dayField.value,
-    +hourField.value,
-    +minuteField.value,
-    +secondField.value
+    +yearField.textContent,
+    +monthNames.indexOf(monthField.textContent),
+    +dayOfMonthField.textContent,
+    +hourField.textContent,
+    +minuteField.textContent,
+    +secondField.textContent
   );
 
   let timestamp = Math.floor(timestampDate.getTime() / 1000);
@@ -216,37 +248,16 @@ startStopButton.addEventListener('click', () => {
   toggleUpdating();
 });
 
-yearField.addEventListener('wheel', stopUpdating);
-yearField.addEventListener('click', stopUpdating);
-monthField.addEventListener('wheel', stopUpdating);
-monthField.addEventListener('click', stopUpdating);
-dayField.addEventListener('wheel', stopUpdating);
-dayField.addEventListener('click', stopUpdating);
-hourField.addEventListener('wheel', stopUpdating);
-hourField.addEventListener('click', stopUpdating);
-minuteField.addEventListener('wheel', stopUpdating);
-minuteField.addEventListener('click', stopUpdating);
-secondField.addEventListener('wheel', stopUpdating);
-secondField.addEventListener('click', stopUpdating);
-
-yearField.addEventListener('wheel', scrollDateEvent);
-monthField.addEventListener('wheel', scrollDateEvent);
-dayField.addEventListener('wheel', scrollDateEvent);
-hourField.addEventListener('wheel', scrollDateEvent);
-minuteField.addEventListener('wheel', scrollDateEvent);
-secondField.addEventListener('wheel', scrollDateEvent);
-
-yearField.addEventListener('click', () => truncateDateTo('year'));
-monthField.addEventListener('click', () => truncateDateTo('month'));
-dayField.addEventListener('click', () => truncateDateTo('day'));
-hourField.addEventListener('click', () => truncateDateTo('hour'));
-minuteField.addEventListener('click', () => truncateDateTo('minute'));
-secondField.addEventListener('click', () => truncateDateTo('second'));
+timeBoxFields.forEach(field => {
+  field.addEventListener('wheel', stopUpdating);
+  field.addEventListener('click', stopUpdating);
+  field.addEventListener('wheel', scrollDateEvent);
+  field.addEventListener('click', truncateDateTo);
+});
 
 closeButtons.forEach(closeWindowOnClickedButton);
 
 highlightTimestampsButton.addEventListener('click', highlightActiveTabTimestamps);
-
 
 function highlightActiveTabTimestamps() {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

@@ -26,14 +26,17 @@
       </button>
     </div>
     <div class="timebox">
-      <input type="text" id="year" class="input-left" placeholder="Year" readonly>
-      <input type="text" id="month" placeholder="Month" readonly>
-      <input type="text" id="day" placeholder="Day" readonly>
-      <input type="text" id="hour" placeholder="Hour" readonly>
-      <input type="text" id="time_dots" placeholder=":" readonly>
-      <input type="text" id="minute" placeholder="Minute" readonly>
-      <input type="text" id="time_dots" placeholder=":" readonly>
-      <input type="text" id="second" class="input-right" placeholder="Second" readonly>
+      <div id="year" class="input-left">Year</div>
+      <div id="month">Month</div>
+      <div id="day">
+        <span id="day-of-month">Day</span>
+        <div id="day-of-week">Day of Week</div>
+      </div>
+      <div id="hour">Hour</div>
+      <div id="time_dots">:</div>
+      <div id="minute">Minute</div>
+      <div id="time_dots">:</div>
+      <div id="second" class="input-right">Second</div>
     </div>
     <div class="button-container">
       <button id="highlightTimestamps" class="should-close">Highlight Unix Timestamps</button>
