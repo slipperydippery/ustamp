@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Unix Timestamp Helper",
+  "name": "Epoch Explorer - unix timestamp tool",
   "version": "1.0",
-  "description": "A simple extension to help with Unix timestamps.",
+  "description": "A simple extension for the most frequent uses of Unix timestamps. Quickly get the current Unix timestamp or that of a specific date and time. Go to the beginning of the year, month, week, or day. Convert to a Unix timestamp and copy to the clipboard with a single click. Also automatically creates hover readable hover texts for every timstamp on a page.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
